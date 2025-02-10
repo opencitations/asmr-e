@@ -1,10 +1,10 @@
-# software_mentions_extraction
+# Automatic Software Mention Recognition and Extraction
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-A workflow designed to harness the power of LLMs for automatic extraction of software mentions in academic articles
+A workflow designed to harness the power of LLMs for automatic recognition extraction of software mentions in academic articles
 
 ## Project Organization
 
@@ -54,14 +54,22 @@ A workflow designed to harness the power of LLMs for automatic extraction of sof
     │   ├── predict.py          <- Code to run model inference with trained models          
     │   └── train.py            <- Code to train models
     │
+    │
+    ├── launcher_dir.py             <- Code for launching the pipelines
+    │
     ├── run_llm_SaT.py          <- Code for running LLM with SaT
-    │         
+    │
+    ├── run_llm_rag.py          <- Code for running LLM with rag
+    │
+    ├── json_converter.py       <- Code for converting results to make them compliant with the evaluatin script
+    │
+    ├── results_converter       <- Code for generating an excel table with the results
+    │
+    ├── evaluation.py           <- Code for evaluating the results
     │
     ├── output_generator_dir.py      <- Output generation script
-    │   
     │
-    ├── launcher.py             <- Code for launching the process
-    │   
+    ├── utils.py                <- Code containing utility functions   
     │
     └── plots.py                <- Code to create visualizations
 ```
