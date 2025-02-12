@@ -311,7 +311,6 @@ async def run_llm_with_parquet(
             # Combine the patterns
             # compiled_combined_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in KEYWORD_PATTERNS]
 
-            # Step 1: Keyword-based filtering
             filtered_chunks = keyword_based_filtering(new_chunks, compiled_combined_patterns)
             logger.info(f"Number of chunks after keyword-based filtering: {len(filtered_chunks)}")
 
@@ -319,7 +318,6 @@ async def run_llm_with_parquet(
                 logger.warning(f"No chunks found after keyword filtering for document {document_id}.")
                 continue
 
-            # Step 2: Semantic similarity filtering
             if iteration == 0:
                 relevant_chunks = semantic_similarity_filter_torch(filtered_chunks, predefined_queries)
                 logger.info(f"Number of chunks after semantic similarity filtering: {len(relevant_chunks)}")
@@ -345,16 +343,13 @@ async def run_llm_with_parquet(
             results = await asyncio.gather(*tasks)
             processed_chunks.update(new_chunks)
 
-            # Step 3: Collect extracted entities avoiding duplicates
             extracted_entities = []
             for _, result in sorted(results):
                 unique_entities = save_extracted_entities(result, extracted_entities)
-                # Ensure that each entity has the correct document_id
                 for entity in unique_entities:
                     entity["document_id"] = document_id
                 extracted_entities.extend(unique_entities)
 
-            # Verify the extracted entities for this document
             if extracted_entities:
                 verified_entities = await verify_extracted_entities(
                     llm, extracted_entities, batch_size=5
@@ -362,12 +357,10 @@ async def run_llm_with_parquet(
             else:
                 verified_entities = []
 
-            # Update examples for the prompt with verified entities
             extracted_software_examples.extend(
                 [entity["software"] for entity in verified_entities if "software" in entity and entity["software"]]
             )
 
-            # Update iteration_results
             iteration_results.append(
                 {
                     "document_id": document_id,
@@ -375,7 +368,6 @@ async def run_llm_with_parquet(
                 }
             )
             
-            # Update new_keywords with names of verified software
             for entity in verified_entities:
                 if "software" in entity and entity["software"]:
                     software = entity["software"]
@@ -400,15 +392,12 @@ async def run_llm_with_parquet(
                             logger.info("Added new keyword and query: %s", software)
                         else:
                             pass
-            # After updating keywords and queries, clear the query embedding cache
             # query_embedding_cache.clear()
             # logger.info("Cleared query embedding cache after processing document %s", document_id)
 
 
-        # Add the results of the current iteration
         extracted_softwares_total.extend(iteration_results)
 
-        # Break if no new keywords are found
         current_count = len(seen)
         logger.info(f"prev count = {prev_count}")
         logger.info(f"current count = {current_count}")
@@ -418,11 +407,9 @@ async def run_llm_with_parquet(
         prev_count = current_count
 
 
-    # After all iterations
     if not extracted_softwares_total:
         logger.warning("No results were extracted. Check the input data or model behavior.")
 
-    # Ensure all documents are included in extracted_softwares_total
     all_document_ids = set(grouped_data.keys())
     documents_with_results = set(result["document_id"] for result in extracted_softwares_total)
     documents_without_results = all_document_ids - documents_with_results
