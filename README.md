@@ -4,6 +4,10 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
+
+[![DOI](https://zenodo.org/badge/930420006.svg)](https://doi.org/10.5281/zenodo.14871091)
+
+
 A workflow designed to harness the power of LLMs for automatic recognition extraction of software mentions in academic articles
 
 ## Project Organization
